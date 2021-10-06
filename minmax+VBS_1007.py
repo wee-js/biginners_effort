@@ -50,6 +50,14 @@ def get_current_price(ticker):
     return pyupbit.get_orderbook(tickers=ticker)[0]["orderbook_units"][0]["ask_price"]
 
 
+def set_log(log):
+    for i in log:
+        wallet = get_balance(i[4:])
+        current_price = get_current_price(i)  
+        if (i[:3] == "KRW") and (wallet > 5100/current_price): log[i][1] = current_price/log[i][5]
+        elif (i[:3] == "BTC") and (wallet > 0.0005/current_price): log[i][1] = current_price/log[i][5]
+    return log
+
 def get_minmax_start(param):
     # param = [ticker, buff, lengthh, lengthl, k1, k2]
     ticker, buff, lengthh, lengthl, k1, k2 = param[0],param[1],param[2],param[3],param[4],param[5]
@@ -139,7 +147,7 @@ inv_size, counting = 2000000, 0
 log = {"KRW-ETH" :[0,0,0,1,1,0.9995], "KRW-XRP" :[0,0,0,1,1,0.9995], "KRW-ETC" :[0,0,0,1,1,0.9995],
        "KRW-ADA" :[0,0,0,1,1,0.9995], "KRW-BCH" :[0,0,0,1,1,0.9995], "BTC-CELO":[0,0,0,1,1,0.9975]}
        # 거래횟수, 매수가, 매도가, 수익률, 누적수익률
-
+log = set_log(log)
 data, lo_max, lo_min, max_c, min_c = get_minmax_start(celo)
 
 # 자동매매 시작
@@ -154,7 +162,6 @@ while True:
             current_price = get_current_price(celo[0])
             wallet = get_balance(celo[0][4:])
             bugget = get_balance(celo[0][:3])
-            print("checking1")
 
             if (current_price < target_s) and (max_c < min_c) and (wallet > 0.0005/current_price) :
                 upbit.sell_market_order(celo[0], wallet*0.9975)
@@ -174,7 +181,6 @@ while True:
                 buy_line, sell_line = get_target_price(i[0], i[1], i[2])
                 current_price = get_current_price(i[0])
                 wallet = get_balance(i[0][4:])
-                print("checking2")
                 
                 if (wallet > 5000/current_price) and (sell_line > current_price):  # 코인 잔고가 있으면 매도 검토
                     upbit.sell_market_order(i[0], wallet*0.9995)
@@ -183,7 +189,6 @@ while True:
                 
                 elif buy_line < current_price:  # 매수 검토 후 잔고 확인
                     krw = get_balance("KRW")
-                    print("checking3", i)
 
                     if krw > inv_size:
                         upbit.buy_market_order(i[0], inv_size*0.9995)
