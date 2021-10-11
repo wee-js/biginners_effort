@@ -112,17 +112,19 @@ def money_work(coin, data):
     if (current_price > target_b) and (max_c > min_c) and (data.loc[t, "wallet"]*current_price < 5000):
         print(1-2, coin[0][4:]," buy:", current_price)
         data.loc[t, 'trace_b'] =  current_price
+        data.loc[t, "bought"] = current_price 
+        
         upbit.buy_market_order(coin[0], data.loc[t, "bugget"]*0.9995)
         post_message(myToken,"#trading", str(coin[0][4:])+" buy:"+str(current_price))
-        data.loc[t, "bought"] = current_price 
         
     elif (current_price < target_s) and (max_c < min_c) and ( data.loc[t, "bugget"] < 5000):
         print(1-1, coin[0][4:]," sell:",current_price)
-        data.loc[t, 'trace_s'] = current_price
-        upbit.sell_market_order(coin[0], data.loc[t, "wallet"]*0.9995)
-        data.loc[t, "bought"] = current_price 
+        data.loc[t, 'trace_s'] = current_price        
         data.loc[t, 'return'] = round(current_price/data.loc[t,"bought"]*0.9995*0.9995, 3)
         data.loc[t, 'acc_rtn']= round(data.loc[t, 'acc_rtn']*data.loc[t, 'return'], 3)
+        data.loc[t, "bought"] = None
+        
+        upbit.sell_market_order(coin[0], data.loc[t, "wallet"]*0.9995)
         post_message(myToken,"#trading", str(coin[0][4:])+" sell:"+str(current_price)+"/log:"+str(data.iloc[-1,6:]))
 
     print(2, data[-1:])
