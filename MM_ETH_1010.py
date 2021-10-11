@@ -114,7 +114,8 @@ def money_work(coin, data):
         data.loc[t, 'trace_b'] =  current_price
         upbit.buy_market_order(coin[0], data.loc[t, "bugget"]*0.9995)
         post_message(myToken,"#trading", str(coin[0][4:])+" buy:"+str(current_price))
-
+        data.loc[t, "bought"] = current_price 
+        
     elif (current_price < target_s) and (max_c < min_c) and ( data.loc[t, "bugget"] < 5000):
         print(1-1, coin[0][4:]," sell:",current_price)
         data.loc[t, 'trace_s'] = current_price
