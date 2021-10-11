@@ -67,7 +67,7 @@ def get_minmax_start(param):
     if data.loc[t1,"wallet"]*data.loc[t1,"close"] > 5000:
         past_data = pd.read_excel("mm1010_monitoring_data.xlsx", index_col= "Unnamed: 0")
         data.loc[t2:, "bought"] = past_data["bought"][-1] 
-    else: data.loc[t2:, "bought"] = 0 
+    else: data.loc[t2:, "bought"] = None
 
     return data[-buff:]
 
