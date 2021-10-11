@@ -120,10 +120,10 @@ def money_work(coin, data):
         print(1-1, coin[0][4:]," sell:",current_price)
         data.loc[t, 'trace_s'] = current_price
         upbit.sell_market_order(coin[0], data.loc[t, "wallet"]*0.9995)
-
+        data.loc[t, "bought"] = current_price 
         data.loc[t, 'return'] = round(current_price/data.loc[t,"bought"]*0.9995*0.9995, 3)
         data.loc[t, 'acc_rtn']= round(data.loc[t, 'acc_rtn']*data.loc[t, 'return'], 3)
-        post_message(myToken,"#trading", str(coin[0][4:])+" sell:"+str(current_price)+"/ ror:"+str(data.loc[t,'return']))
+        post_message(myToken,"#trading", str(coin[0][4:])+" sell:"+str(current_price)+"/log:"+str(data.iloc[-1,6:]))
 
     print(2, data[-1:])
     return data
@@ -135,7 +135,7 @@ standard_time = get_start_time("KRW-BTC", "minute60")
 post_message(myToken,"#trading", "MM autotrade start: "+str(standard_time))
 
 # 기본 세팅
-coin = ["KRW-ETC", 100, 70, 50, 0.01, 0.09]     # minmax 파라미터 설정ticker, buff, lengthh, lengthl, k1, k2
+coin = ["KRW-ETC", 100, 75, 70, 0.01, 0.09]     # minmax 파라미터 설정ticker, buff, lengthh, lengthl, k1, k2
 data= get_minmax_start(coin)
 
 # 자동매매 시작
@@ -152,9 +152,9 @@ while True:
 
             time.sleep(5)
 
-        elif standard_time + datetime.timedelta(minutes =60) == start_time:
-            standard_time = standard_time + datetime.timedelta(minutes =60)
-            post_message(myToken,"#trading", str(start_time)+"/log:"+str(data.iloc[-1,10:]))
+        elif standard_time + datetime.timedelta(minutes =15) == start_time:
+            standard_time = standard_time + datetime.timedelta(minutes =15)
+            post_message(myToken,"#trading", str(start_time)+"/log:"+str(data.iloc[-1,6:]))
 
         time.sleep(1)          
 
